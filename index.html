@@ -1,0 +1,210 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Participe Passé Run</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: single centred study card, run-tracker grid of 28 tiles beneath, utility mono for counts */
+:root{
+  --bg:#eef1f6; --surface:#ffffff; --ink:#18213a; --muted:#5b6580;
+  --line:#d5dbe7; --accent:#2340c7; --accent-soft:#e3e8fb;
+  --good:#1d7a4c; --good-soft:#dcf1e5; --bad:#b4282f; --bad-soft:#f8e0e1;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#0f1424; --surface:#182037; --ink:#e8ecf6; --muted:#9aa4bf;
+  --line:#2b3552; --accent:#8ea2ff; --accent-soft:#232d55;
+  --good:#5fd39a; --good-soft:#163a2a; --bad:#ff8a8f; --bad-soft:#41191d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0f1424; --surface:#182037; --ink:#e8ecf6; --muted:#9aa4bf;
+  --line:#2b3552; --accent:#8ea2ff; --accent-soft:#232d55;
+  --good:#5fd39a; --good-soft:#163a2a; --bad:#ff8a8f; --bad-soft:#41191d; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.5;
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:28px 48px}
+.wrap{max-width:620px;margin:0 auto;display:flex;flex-direction:column;gap:20px}
+header{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(1.6rem,5vw,2.2rem);line-height:1.05;margin:0;letter-spacing:-.02em;text-wrap:balance}
+h1 em{font-style:normal;color:var(--accent)}
+.sub{color:var(--muted);margin:4px 0 0;font-size:.95rem}
+.stats{display:flex;gap:16px;font-family:var(--mono);font-size:.8rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.stats b{display:block;font-size:1.3rem;color:var(--ink)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:24px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 0 var(--line)}
+.label{font-size:.75rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.prompt{font-family:var(--display);font-weight:700;font-size:clamp(2rem,8vw,2.8rem);line-height:1.1;margin:0;overflow-wrap:anywhere}
+.ask{margin:0;color:var(--muted)}
+.ask strong{color:var(--ink)}
+form{display:flex;gap:8px;flex-wrap:wrap}
+input[type=text]{flex:1 1 220px;min-width:0;font:inherit;font-size:1.2rem;padding:12px 14px;border:2px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+input[type=text]:focus{outline:none;border-color:var(--accent)}
+button{font:inherit;font-weight:700;cursor:pointer;border-radius:10px;border:2px solid transparent}
+.go{background:var(--accent);color:var(--surface);padding:12px 20px}
+.go:focus-visible,.acc:focus-visible,.ghost:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.accents{display:flex;gap:6px;flex-wrap:wrap}
+.acc{background:var(--accent-soft);color:var(--ink);padding:6px 12px;min-width:40px;font-size:1.05rem;font-weight:400}
+.feedback{border-radius:10px;padding:12px 14px;font-size:1rem}
+.feedback.good{background:var(--good-soft);color:var(--good)}
+.feedback.bad{background:var(--bad-soft);color:var(--bad)}
+.feedback strong{font-family:var(--display)}
+.run-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.run-head span{font-family:var(--mono);font-size:.85rem;color:var(--muted);font-variant-numeric:tabular-nums}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:6px}
+.tile{font-size:.82rem;padding:6px 8px;border-radius:8px;border:1px solid var(--line);color:var(--muted);background:var(--surface);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;transition:background .2s,color .2s}
+.tile.on{background:var(--good-soft);color:var(--good);border-color:transparent;font-weight:700}
+.tile.miss{background:var(--bad-soft);color:var(--bad);border-color:transparent}
+.ghost{background:transparent;border-color:var(--line);color:var(--muted);padding:8px 14px;font-weight:400;font-size:.9rem}
+.done{text-align:center;padding:36px 24px}
+.done .prompt{color:var(--good)}
+.help{color:var(--muted);font-size:.9rem;margin:0}
+.review-head{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap}
+.review-head h2{font-family:var(--display);font-weight:700;font-size:1.3rem;margin:0}
+.rv{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.rv li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 12px;padding:10px 0;border-top:1px solid var(--line)}
+.rv li:first-child{border-top:0}
+.rv .verb{font-weight:700;min-width:0}
+.rv .verb .pp{font-family:var(--display);color:var(--accent);font-size:1.15rem}
+.rv .meaning{color:var(--muted);font-weight:400}
+.rv .count{font-family:var(--mono);font-size:.8rem;color:var(--bad);background:var(--bad-soft);border-radius:999px;padding:2px 10px;align-self:start;font-variant-numeric:tabular-nums}
+.rv .typed{grid-column:1/-1;font-size:.88rem;color:var(--muted);overflow-wrap:anywhere}
+.empty{color:var(--muted);margin:0}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
+
+<div class="wrap">
+  <header>
+    <div>
+      <h1>Participe passé <em>run</em></h1>
+      <p class="sub">28 irregular verbs. Get every one right without a slip to finish.</p>
+    </div>
+    <div class="stats">
+      <div><b id="streak">0</b>streak</div>
+      <div><b id="best">0</b>best</div>
+      <div><b id="asked">0</b>asked</div>
+    </div>
+  </header>
+
+  <section class="card" id="quiz">
+    <div class="label" id="mode">French → participe passé</div>
+    <p class="prompt" id="prompt">…</p>
+    <p class="ask" id="ask"></p>
+    <form id="f" autocomplete="off">
+      <input type="text" id="answer" spellcheck="false" autocapitalize="off" aria-label="Your answer">
+      <button class="go" id="go" type="submit">Check</button>
+    </form>
+    <div class="accents" id="accents" aria-label="Insert accented letter"></div>
+    <div class="feedback" id="fb" hidden></div>
+  </section>
+
+  <section class="card done" id="done" hidden>
+    <div class="label">Run complete</div>
+    <p class="prompt">Parfait !</p>
+    <p class="ask" id="doneTxt"></p>
+    <div><button class="go" id="again" type="button">Start a new run</button></div>
+  </section>
+
+  <section class="card" id="review">
+    <div class="review-head"><h2>Verbs to review</h2><button class="ghost" id="clearRv" type="button">Clear list</button></div>
+    <p class="empty" id="rvEmpty">No mistakes yet. Any verb you get wrong will appear here, most-missed first, with the correct form and what you typed.</p>
+    <ul class="rv" id="rvList"></ul>
+  </section>
+
+  <p class="help">Words come up in a shuffled cycle: every verb once, then a fresh shuffle. The order never adapts to your mistakes. Any wrong answer clears the run. Accents count. Press Enter to check and Enter again to move on.</p>
+  <div><button class="ghost" id="reset" type="button">Restart run</button></div>
+</div>
+
+<script>
+const VERBS=[
+ ["apprendre","to learn","appris"],["avoir","to have","eu"],["boire","to drink","bu"],
+ ["comprendre","to understand","compris"],["conduire","to drive","conduit"],["courir","to run","couru"],
+ ["croire","to believe","cru"],["découvrir","to discover","découvert"],["devoir","to have to|must","dû"],
+ ["dire","to say|to tell","dit"],["écrire","to write","écrit"],["être","to be","été"],
+ ["faire","to do|to make","fait"],["lire","to read","lu"],["mourir","to die","mort"],
+ ["naître","to be born","né"],["offrir","to offer","offert"],["pouvoir","to be able|can","pu"],
+ ["prendre","to take","pris"],["produire","to produce","produit"],["recevoir","to receive","reçu"],
+ ["savoir","to know","su"],["souffrir","to suffer","souffert"],["suivre","to follow","suivi"],
+ ["tenir","to hold","tenu"],["venir","to come","venu"],["voir","to see","vu"],["vouloir","to want","voulu"]
+];
+const MODES=[
+ {label:"French → participe passé",prompt:v=>v[0],ask:()=>"Write the <strong>past participle</strong> in French.",answers:v=>[v[2]],show:v=>v[2]},
+ {label:"English → participe passé",prompt:v=>v[1].split("|").join(" / "),ask:()=>"Write the French <strong>past participle</strong> of this verb.",answers:v=>[v[2]],show:v=>v[2]},
+ {label:"Participe passé → English",prompt:v=>v[2],ask:()=>"Which verb is this from? Give the <strong>English meaning</strong> (e.g. “to drink”).",
+  answers:v=>v[1].split("|").flatMap(e=>[e,e.replace(/^to /,"")]),show:v=>v[1].split("|").join(" / ")+" ("+v[0]+")"}
+];
+const $=id=>document.getElementById(id);
+const norm=s=>s.trim().toLowerCase().replace(/\s+/g," ").replace(/[’']/g,"'");
+const strip=s=>s.normalize("NFD").replace(/[̀-ͯ]/g,"");
+let deck=[],cur=null,mode=null,waiting=false,run=new Set(),streak=0,asked=0,best=0;
+try{best=+localStorage.getItem("pp-best")||0}catch(e){}
+let misses={};
+try{misses=JSON.parse(localStorage.getItem("pp-misses")||"{}")||{}}catch(e){misses={}}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function saveMisses(){try{localStorage.setItem("pp-misses",JSON.stringify(misses))}catch(e){}}
+function drawReview(){
+  const rows=Object.entries(misses).map(([i,m])=>[+i,m]).filter(([i])=>VERBS[i]).sort((a,b)=>b[1].n-a[1].n||a[0]-b[0]);
+  $("rvEmpty").hidden=rows.length>0;$("clearRv").hidden=!rows.length;
+  $("rvList").innerHTML=rows.map(([i,m])=>{const v=VERBS[i];
+    return `<li><div class="verb">${esc(v[0])} → <span class="pp">${esc(v[2])}</span> <span class="meaning">· ${esc(v[1].split("|").join(" / "))}</span></div><span class="count">${m.n}× wrong</span><div class="typed">You wrote: ${m.typed.slice(-3).map(t=>"“"+esc(t)+"”").join(", ")}</div></li>`}).join("");
+}
+
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+function refill(){
+  let d=shuffle(VERBS.map((_,i)=>i));
+  if(cur!==null&&d[0]===cur){[d[0],d[d.length-1]]=[d[d.length-1],d[0]]}
+  deck=d;
+}
+function drawGrid(missIdx){
+  $("streak").textContent=streak;$("best").textContent=best;$("asked").textContent=asked;
+}
+function next(){
+  if(!deck.length)refill();
+  cur=deck.shift();
+  mode=MODES[Math.floor(Math.random()*MODES.length)];
+  const v=VERBS[cur];
+  $("mode").textContent=mode.label;$("prompt").textContent=mode.prompt(v);$("ask").innerHTML=mode.ask(v);
+  $("fb").hidden=true;$("answer").value="";$("answer").disabled=false;$("go").textContent="Check";waiting=false;
+  $("answer").focus();
+}
+function check(){
+  const v=VERBS[cur],given=norm($("answer").value);
+  if(!given)return;
+  const ok=mode.answers(v).map(norm);
+  asked++;
+  const fb=$("fb");fb.hidden=false;
+  if(ok.includes(given)){
+    streak++;run.add(cur);if(streak>best){best=streak;try{localStorage.setItem("pp-best",best)}catch(e){}}
+    fb.className="feedback good";fb.innerHTML=`<strong>Correct.</strong> ${v[0]} → ${v[2]} (${v[1].split("|")[0]})`;
+    drawGrid();
+    if(run.size===VERBS.length){finish();return}
+  }else{
+    const accentOnly=ok.map(strip).includes(strip(given));
+    streak=0;run.clear();
+    const m=misses[cur]||{n:0,typed:[]};m.n++;m.typed.push($("answer").value.trim());m.typed=m.typed.slice(-3);misses[cur]=m;saveMisses();drawReview();
+    fb.className="feedback bad";
+    fb.innerHTML=`<strong>${accentOnly?"Check the accent.":"Not quite."}</strong> The answer is <strong>${mode.show(v)}</strong>. Run cleared.`;
+    drawGrid(cur);
+  }
+  $("answer").disabled=true;$("go").textContent="Next";waiting=true;$("go").focus();
+}
+function finish(){
+  $("quiz").hidden=true;$("done").hidden=false;
+  $("doneTxt").textContent=`All ${VERBS.length} verbs right in a row. ${asked} questions asked in total.`;
+  $("again").focus();
+}
+function restart(){run.clear();streak=0;asked=0;deck=[];cur=null;$("quiz").hidden=false;$("done").hidden=true;drawGrid();next()}
+
+$("f").addEventListener("submit",e=>{e.preventDefault();waiting?next():check()});
+$("go").addEventListener("keydown",e=>{if(e.key==="Enter"&&waiting){e.preventDefault();next()}});
+$("again").addEventListener("click",restart);
+$("reset").addEventListener("click",restart);
+$("clearRv").addEventListener("click",()=>{misses={};saveMisses();drawReview()});
+["é","è","ê","â","î","ç","û"].forEach(c=>{
+  const b=document.createElement("button");b.type="button";b.className="acc";b.textContent=c;
+  b.addEventListener("click",()=>{const i=$("answer");if(i.disabled)return;const s=i.selectionStart??i.value.length;i.value=i.value.slice(0,s)+c+i.value.slice(i.selectionEnd??s);i.focus();i.setSelectionRange(s+1,s+1)});
+  $("accents").appendChild(b);
+});
+drawGrid();drawReview();next();
+</script>
+
+</body></html>
